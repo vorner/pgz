@@ -1,0 +1,12 @@
+[package]
+name = "pgz"
+version = "0.1.0"
+authors = ["Michal 'vorner' Vaner <vorner@vorner.cz>"]
+
+[dependencies]
+futures = "~0.1.13"
+futures-cpupool = "~0.1.5"
+flate2 = "~0.2.19"
+num_cpus = "~1.4"
+tokio-core = "~0.1.7"
+
