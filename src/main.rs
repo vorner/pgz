@@ -2,7 +2,6 @@ extern crate flate2;
 extern crate futures;
 extern crate futures_cpupool;
 extern crate num_cpus;
-extern crate tokio_core;
 
 use std::thread::{self, JoinHandle};
 use std::io::{self, Read, Write};
@@ -13,7 +12,6 @@ use futures::{Future, Stream, Sink};
 use futures::future;
 use futures::sync::mpsc::{self, Receiver, Sender};
 use futures_cpupool::CpuPool;
-use tokio_core::reactor::Core;
 
 // 100 MB
 const CHUNK_SIZE: usize = 100 * 1024 * 1024;
@@ -60,14 +58,14 @@ fn main() {
     let out_thread = write_output(out_receiver);
 
     let pool = CpuPool::new_num_cpus();
-    let process = in_receiver
+    in_receiver
         .map(|chunk| {
              pool.spawn(future::lazy(move || Ok(compress(chunk, Compression::Fast))))
         })
         .buffered(num_cpus::get())
-        .forward(out_sender.sink_map_err(|e| panic!("{}", e)));
-    let mut core = Core::new().unwrap();
-    core.run(process).unwrap();
+        .forward(out_sender.sink_map_err(|e| panic!("{}", e)))
+        .wait()
+        .unwrap();
 
     out_thread.join().unwrap();
     in_thread.join().unwrap();
