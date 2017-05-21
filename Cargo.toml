@@ -2,6 +2,8 @@
 name = "pgz"
 version = "0.1.0"
 authors = ["Michal 'vorner' Vaner <vorner@vorner.cz>"]
+readme = "README.md"
+license = "Apache-2.0/MIT"
 
 [dependencies]
 futures = "~0.1.13"
