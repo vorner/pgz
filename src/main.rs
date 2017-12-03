@@ -13,8 +13,8 @@ use futures::future;
 use futures::sync::mpsc::{self, Receiver, Sender};
 use futures_cpupool::CpuPool;
 
-// 100 MB
-const CHUNK_SIZE: usize = 100 * 1024 * 1024;
+// 32 MB
+const CHUNK_SIZE: usize = 32 * 1024 * 1024;
 
 fn read_input(mut sink: Sender<Vec<u8>>) -> JoinHandle<()> {
     thread::spawn(move || {
