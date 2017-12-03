@@ -60,7 +60,7 @@ fn main() {
     let pool = CpuPool::new_num_cpus();
     in_receiver
         .map(|chunk| {
-             pool.spawn(future::lazy(move || Ok(compress(chunk, Compression::Fast))))
+             pool.spawn(future::lazy(move || Ok(compress(chunk, Compression::fast()))))
         })
         .buffered(num_cpus::get())
         .forward(out_sender.sink_map_err(|e| panic!("{}", e)))
