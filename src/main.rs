@@ -1,4 +1,5 @@
-extern crate failure;
+#[macro_use]
+extern crate anyhow;
 extern crate flate2;
 extern crate futures;
 extern crate futures_cpupool;
@@ -11,7 +12,7 @@ use std::io::{self, Read, Write};
 use std::process;
 use std::thread::{self, JoinHandle};
 
-use failure::Error;
+use anyhow::Error;
 use flate2::Compression;
 use flate2::bufread::GzEncoder;
 use futures::{Future, Stream, Sink};
@@ -54,7 +55,7 @@ fn read_input(mut sink: Sender<Vec<u8>>, chunk_size: usize) -> JoinHandle<Result
 
 fn write_output(stream: Receiver<Vec<u8>>) -> JoinHandle<Result<(), Error>> {
     thread::spawn(move || -> Result<(), Error> {
-        stream.map_err(|()| failure::err_msg("Error on channel"))
+        stream.map_err(|()| anyhow!("Error on channel"))
             .for_each(|chunk| {
                 let stdout_unlocked = io::stdout();
                 let mut stdout = stdout_unlocked.lock();
@@ -82,7 +83,7 @@ fn run() -> Result<(), Error> {
     let pool = CpuPool::new(jobs);
     let compression = options.compression;
     in_receiver
-        .map_err(|()| failure::err_msg("Error on channel"))
+        .map_err(|()| anyhow!("Error on channel"))
         .map(|chunk| {
              pool.spawn(future::lazy(move || {
                  future::ok(compress(&chunk, Compression::new(compression)))
